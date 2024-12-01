@@ -1,0 +1,55 @@
+[package]
+name = "streamregex"
+version = "0.1.0"
+edition = "2024"
+authors = ["Mark Wernsdorfer <wernsdorfer@gmail.com>"]
+description = "High-performance pattern matching library for streaming data"
+license = "MIT"
+repository = "https://github.com/wehnsdaefflae/streamregex"
+
+[lib]
+name = "streamregex"
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+# Core dependencies
+parking_lot = "0.12"
+crossbeam-channel = "0.5"
+thiserror = "1.0"
+dashmap = "5.5"
+futures = "0.3"
+
+# SIMD optimizations
+packed_simd = { version = "0.3", optional = true }
+faster = { version = "0.9", optional = true }
+
+# Logging and metrics
+tracing = "0.1"
+metrics = "0.21"
+
+# FFI and Python bindings
+pyo3 = { version = "0.19", features = ["extension-module"], optional = true }
+
+[dev-dependencies]
+criterion = "0.5"
+regex = "1.9"
+hyperscan = "0.3"
+rand = "0.8"
+memory-stats = "1.1"
+tokio = { version = "1.32", features = ["full"] }
+test-case = "3.1"
+
+[features]
+default = ["simd"]
+simd = ["packed_simd", "faster"]
+python = ["pyo3"]
+
+[[bench]]
+name = "pattern_matching"
+harness = false
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
+debug = false
